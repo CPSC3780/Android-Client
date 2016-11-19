@@ -13,7 +13,7 @@
         android:text="Welcome to CPSC3780 Chat"
         android:textStyle="bold" />
     <EditText
-        android:id="@+id/addressEditText"
+        android:id="@+id/usernameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter username:" />
