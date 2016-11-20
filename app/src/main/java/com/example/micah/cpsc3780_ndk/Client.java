@@ -139,6 +139,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
             @Override
             public void run() {
                 while (!m_terminate) {
+//                    Thread.sleep(50);
                     receiveOverUDP();
                 }
             }
@@ -150,7 +151,6 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
-        textResponse.setText(response);
         super.onPostExecute(result);
     }
 
