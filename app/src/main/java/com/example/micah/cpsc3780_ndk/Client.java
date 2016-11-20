@@ -59,7 +59,8 @@ public class Client extends AsyncTask<Void, Void, Void> {
             byte[] receiveData = new byte[256];
 
             while (true) {
-                DatagramPacket send_packet = new DatagramPacket(send_data, connectionMessage.asCharVector().size(), IPAddress, dstPort);
+                send_data = connectionMessage.asAString().getBytes();
+                DatagramPacket send_packet = new DatagramPacket(send_data, connectionMessage.asAString().length(), IPAddress, dstPort);
                 socket.send(send_packet);
 
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);

@@ -126,7 +126,7 @@ public class DataMessage {
         return messageTypeAsString;
     }
 
-    ArrayList<Character> asCharVector()
+    String asAString()
     {
         String messageAsString =
                 this.m_payload + Constants.messageDelimiter()
@@ -135,13 +135,7 @@ public class DataMessage {
                  + this.viewMessageTypeAsString() + Constants.messageDelimiter()
                  + String.valueOf(this.m_relayToAdjacentServers);
 
-        ArrayList<Character> chars = new ArrayList<Character>();
-
-        for (char c : messageAsString.toCharArray()) {
-            chars.add(c);
-        }
-
-        return chars;
+        return messageAsString;
     }
 
 }
