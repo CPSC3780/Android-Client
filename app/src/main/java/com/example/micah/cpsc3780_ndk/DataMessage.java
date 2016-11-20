@@ -33,18 +33,11 @@ public class DataMessage {
         this.m_relayToAdjacentServers = true;
     }
 
-    DataMessage(
-            ArrayList<Character> inCharVector
-    )
+    DataMessage(String receivedStringMessage)
     {
-        StringBuilder builder = new StringBuilder(inCharVector.size());
-        for(Character ch: inCharVector)
-        {
-            builder.append(ch);
-        }
-        String asString = builder.toString();
+        String receivedString = receivedStringMessage;
 
-        String[] partsOfMessage = asString.split(Constants.messageDelimiter());
+        String[] partsOfMessage = receivedString.split(Constants.messageDelimiter());
         this.m_payload = partsOfMessage[0];
         this.m_sourceIdentifier = partsOfMessage[1];
         this.m_destinationIdentifier = partsOfMessage[2];
@@ -129,6 +122,22 @@ public class DataMessage {
     public String getRelayServerStatusAsIntString () {
         // TODO: this is kind of dumb, need to do some more research on this
         return this.m_relayToAdjacentServers ? "1" : "0";
+    }
+
+    public int viewMessageType() {
+        return this.m_messageType;
+    }
+
+    public String viewPayload () {
+        return this.m_payload;
+    }
+
+    public String viewSourceIdentifier () {
+        return this.m_sourceIdentifier;
+    }
+
+    public String viewDestinationIdentifier () {
+        return this.m_destinationIdentifier;
     }
 
     public String asAString()

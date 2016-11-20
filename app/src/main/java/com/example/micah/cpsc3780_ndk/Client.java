@@ -66,22 +66,55 @@ public class Client extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    @Override
-    protected Void doInBackground(Void... arg0) {
+    private void receiveOverUDP ()
+    {
         try {
-            String initiateMessage = this.user_name + " has connected.";
-            String destination = "broadcast";
-
-            DataMessage connectionMessage =
-                    new DataMessage(
-                            initiateMessage, this.user_name, destination, Constants.mt_CLIENT_CONNECT);
-
-            this.sendOverUDP(connectionMessage);
-
             byte[] receiveData = new byte[256];
+
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             this.UDPsocket.receive(receivePacket);
-            response = new String(receivePacket.getData());
+            String receivedMessage = new String(receivePacket.getData());
+
+            DataMessage message = new DataMessage(receivedMessage);
+
+            if (receivedMessage.length() > 0) {
+                int messageType  = message.viewMessageType();
+
+                switch (messageType)
+                {
+                    case Constants.mt_CLIENT_CONNECT:
+                    {
+                        response = message.viewPayload();
+                        break;
+                    }
+                    case Constants.mt_CLIENT_DISCONNECT:
+                    {
+                        // Do nothing
+                        break;
+                    }
+                    case Constants.mt_CLIENT_PRIVATE_CHAT:
+                    {
+                        response = message.viewSourceIdentifier() + " whispers: " + message.viewPayload();
+                        break;
+                    }
+                    case Constants.mt_CLIENT_TARGET_NOT_FOUND:
+                    {
+                        response = "Server: Could not deliver message \"" + message.viewDestinationIdentifier() + "\"" + "\n";
+                        break;
+                    }
+                    case Constants.mt_RELAY_CHAT:
+                    {
+                        response = message.viewSourceIdentifier() + " says: " + message.viewPayload() + "\n";
+                        break;
+                    }
+                    default:
+                    {
+                        // unexpected type
+                        assert(false);
+                    }
+                }
+            }
+
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -90,6 +123,27 @@ public class Client extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
             response = "IOException: " + e.toString();
         }
+
+    }
+
+    @Override
+    protected Void doInBackground(Void... arg0) {
+        String initiateMessage = this.user_name + " has connected.";
+        String destination = "broadcast";
+
+        DataMessage connectionMessage = new DataMessage(initiateMessage, this.user_name, destination, Constants.mt_CLIENT_CONNECT);
+        this.sendOverUDP(connectionMessage);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!m_terminate) {
+                    receiveOverUDP();
+                }
+            }
+        }).start();
+
+
         return null;
     }
 
