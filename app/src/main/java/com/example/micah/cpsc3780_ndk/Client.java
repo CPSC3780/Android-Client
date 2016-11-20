@@ -22,58 +22,71 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 import java.net.InetAddress;
 
-// TODO: this code from http://androidsrc.net/android-client-server-using-sockets-client-implementation/
-// TODO: will act as a template for the client. Will adjust accordingly
-
 public class Client extends AsyncTask<Void, Void, Void> {
+    /**
+     * MEMBER VARIABLES
+     */
 
     String dstAddress;
     int dstPort;
     String user_name;
     String response = "";
     TextView textResponse;
+    Boolean m_terminate = false;
+    DatagramSocket UDPsocket = null;
 
     Client(String addr, int port, String username,TextView textResponse) {
-        dstAddress = addr;
-        dstPort = port;
-        user_name = username;
+        this.dstAddress = addr;
+        this.dstPort = port;
+        this.user_name = username;
         this.textResponse = textResponse;
+
+        try {
+            this.UDPsocket = new DatagramSocket(dstPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+            response = "IOException: " + e.toString();
+        }
+    }
+
+    private void sendOverUDP (DataMessage message)
+    {
+        try {
+            InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
+            byte[] send_data = new byte[256];
+            send_data = message.asAString().getBytes();
+            DatagramPacket send_packet = new DatagramPacket(send_data, message.asAString().length(), IPAddress, this.dstPort);
+            this.UDPsocket.send(send_packet);
+        } catch (UnknownHostException e) {
+        e.printStackTrace();
+        response = "UnknownHostException: " + e.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            response = "IOException: " + e.toString();
+        }
     }
 
     @Override
     protected Void doInBackground(Void... arg0) {
-
-        DatagramSocket socket = null;
-        String initiateMessage = this.user_name + " has connected.";
-        String destination = "broadcast";
-
-        DataMessage connectionMessage =
-                new DataMessage(
-                initiateMessage, this.user_name, destination, Constants.mt_CLIENT_CONNECT);
-
         try {
-            socket = new DatagramSocket(dstPort);
-            InetAddress IPAddress =  InetAddress.getByName(dstAddress);
+            String initiateMessage = this.user_name + " has connected.";
+            String destination = "broadcast";
 
-            byte[] send_data = new byte[256];
+            DataMessage connectionMessage =
+                    new DataMessage(
+                            initiateMessage, this.user_name, destination, Constants.mt_CLIENT_CONNECT);
+
+            this.sendOverUDP(connectionMessage);
+
             byte[] receiveData = new byte[256];
-
-            while (true) {
-                send_data = connectionMessage.asAString().getBytes();
-                DatagramPacket send_packet = new DatagramPacket(send_data, connectionMessage.asAString().length(), IPAddress, dstPort);
-                socket.send(send_packet);
-
-                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                socket.receive(receivePacket);
-                response = new String(receivePacket.getData());
-            }
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            this.UDPsocket.receive(receivePacket);
+            response = new String(receivePacket.getData());
 
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             response = "UnknownHostException: " + e.toString();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             response = "IOException: " + e.toString();
         }

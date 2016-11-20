@@ -41,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
                         editTextUsername.getText().toString(),
                         response);
                 myClient.execute();
+                editTextUsername.setVisibility(View.GONE);
+                editTextAddress.setVisibility(View.GONE);
+                editTextPort.setVisibility(View.GONE);
+                buttonConnect.setVisibility(View.GONE);
+                buttonClear.setVisibility(View.GONE);
             }
         });
 
