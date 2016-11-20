@@ -79,6 +79,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
             if (receivedMessage.length() > 0) {
                 int messageType  = message.viewMessageType();
+                Log.i("messageType", String.valueOf(message.viewMessageType()));
 
                 switch (messageType)
                 {
@@ -149,7 +150,6 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
-        Log.i("text response", response);
         textResponse.setText(response);
         super.onPostExecute(result);
     }

@@ -55,6 +55,7 @@ public class DataMessage {
      * PUBLIC METHODS
      */
     public int stringToMessageType (String inMessageTypeAsString) {
+        Log.i("messagetype", inMessageTypeAsString);
 
         if(inMessageTypeAsString.equals("client connect"))
         {
@@ -69,6 +70,11 @@ public class DataMessage {
         if(inMessageTypeAsString.equals("private chat"))
         {
             return Constants.mt_CLIENT_PRIVATE_CHAT;
+        }
+
+        if (inMessageTypeAsString.equals("relay chat"))
+        {
+            return Constants.mt_RELAY_CHAT;
         }
 
         if(inMessageTypeAsString.equals("target not found"))
