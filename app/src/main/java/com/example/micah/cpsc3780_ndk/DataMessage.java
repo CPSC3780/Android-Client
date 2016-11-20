@@ -126,14 +126,19 @@ public class DataMessage {
         return messageTypeAsString;
     }
 
-    String asAString()
+    public String getRelayServerStatusAsIntString () {
+        // TODO: this is kind of dumb, need to do some more research on this
+        return this.m_relayToAdjacentServers ? "1" : "0";
+    }
+
+    public String asAString()
     {
         String messageAsString =
                 this.m_payload + Constants.messageDelimiter()
                  + this.m_sourceIdentifier + Constants.messageDelimiter()
                  + this.m_destinationIdentifier + Constants.messageDelimiter()
                  + this.viewMessageTypeAsString() + Constants.messageDelimiter()
-                 + String.valueOf(this.m_relayToAdjacentServers);
+                 + this.getRelayServerStatusAsIntString() + Constants.messageDelimiter();
 
         return messageAsString;
     }
