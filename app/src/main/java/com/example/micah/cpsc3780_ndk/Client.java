@@ -149,6 +149,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
+        Log.i("text response", response);
         textResponse.setText(response);
         super.onPostExecute(result);
     }

@@ -1,7 +1,9 @@
 package com.example.micah.cpsc3780_ndk;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
+import android.util.Log;
 /**
  * Created by Micah on 2016-11-19.
  */
@@ -37,7 +39,7 @@ public class DataMessage {
     {
         String receivedString = receivedStringMessage;
 
-        String[] partsOfMessage = receivedString.split(Constants.messageDelimiter());
+        String[] partsOfMessage = receivedString.split(Pattern.quote("/?"));
         this.m_payload = partsOfMessage[0];
         this.m_sourceIdentifier = partsOfMessage[1];
         this.m_destinationIdentifier = partsOfMessage[2];
