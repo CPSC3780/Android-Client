@@ -8,9 +8,11 @@ import android.widget.Button;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
     TextView response;
-    EditText editTextAddress, editTextPort;
+    EditText editTextAddress, editTextPort, editTextUsername;
     Button buttonConnect, buttonClear;
 
     @Override
@@ -20,10 +22,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * App entry point, here we are instantiating UI elements
-     * and passing event handlers accordingly
+     * and setting event handlers accordingly
      */
         editTextAddress = (EditText) findViewById(R.id.addressEditText);
         editTextPort = (EditText) findViewById(R.id.portEditText);
+        editTextUsername = (EditText) findViewById(R.id.usernameEditText);
         buttonConnect = (Button) findViewById(R.id.connectButton);
         buttonClear = (Button) findViewById(R.id.clearButton);
         response = (TextView) findViewById(R.id.responseTextView);
@@ -32,9 +35,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                Client myClient = new Client(editTextAddress.getText()
-                        .toString(), Integer.parseInt(editTextPort
-                        .getText().toString()), response);
+                Client myClient = new Client(
+                        editTextAddress.getText().toString(),
+                        Integer.parseInt(editTextPort.getText().toString()),
+                        editTextUsername.getText().toString(),
+                        response);
                 myClient.execute();
             }
         });

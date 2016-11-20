@@ -6,9 +6,11 @@ package com.example.micah.cpsc3780_ndk;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.UnknownHostException;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
@@ -18,6 +20,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import android.os.AsyncTask;
 import android.widget.TextView;
+import java.net.InetAddress;
 
 // TODO: this code from http://androidsrc.net/android-client-server-using-sockets-client-implementation/
 // TODO: will act as a template for the client. Will adjust accordingly
@@ -26,36 +29,42 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     String dstAddress;
     int dstPort;
+    String user_name;
     String response = "";
     TextView textResponse;
 
-    Client(String addr, int port, TextView textResponse) {
+    Client(String addr, int port, String username,TextView textResponse) {
         dstAddress = addr;
         dstPort = port;
+        user_name = username;
         this.textResponse = textResponse;
     }
 
     @Override
     protected Void doInBackground(Void... arg0) {
 
-        Socket socket = null;
+        DatagramSocket socket = null;
+        String initiateMessage = this.user_name + " has connected.";
+        String destination = "broadcast";
+
+        DataMessage connectionMessage =
+                new DataMessage(
+                initiateMessage, this.user_name, destination, Constants.mt_CLIENT_CONNECT);
 
         try {
-            socket = new Socket(dstAddress, dstPort);
+            socket = new DatagramSocket(dstPort);
+            InetAddress IPAddress =  InetAddress.getByName(dstAddress);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(
-                    1024);
-            byte[] buffer = new byte[1024];
+            byte[] send_data = new byte[256];
+            byte[] receiveData = new byte[256];
 
-            int bytesRead;
-            InputStream inputStream = socket.getInputStream();
+            while (true) {
+                DatagramPacket send_packet = new DatagramPacket(send_data, connectionMessage.asCharVector().size(), IPAddress, dstPort);
+                socket.send(send_packet);
 
-         /*
-          * notice: inputStream.read() will block if no data return
-          */
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, bytesRead);
-                response += byteArrayOutputStream.toString("UTF-8");
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                socket.receive(receivePacket);
+                response = new String(receivePacket.getData());
             }
 
         } catch (UnknownHostException e) {
@@ -66,15 +75,6 @@ public class Client extends AsyncTask<Void, Void, Void> {
             // TODO Auto-generated catch block
             e.printStackTrace();
             response = "IOException: " + e.toString();
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
         }
         return null;
     }
