@@ -2,24 +2,12 @@ package com.example.micah.cpsc3780_ndk;
 /**
  * Created by Micah on 2016-11-18.
  */
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.UnknownHostException;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.TextView;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import android.os.AsyncTask;
-import android.widget.TextView;
 import java.net.InetAddress;
 
 public class Client extends AsyncTask<Void, Void, Void> {
@@ -31,15 +19,15 @@ public class Client extends AsyncTask<Void, Void, Void> {
     int dstPort;
     String user_name;
     String response = "";
-    TextView textResponse;
     Boolean m_terminate = false;
     DatagramSocket UDPsocket = null;
 
-    Client(String addr, int port, String username,TextView textResponse) {
+    DataMessage messageToSend = null;
+
+    Client(String addr, int port, String username) {
         this.dstAddress = addr;
         this.dstPort = port;
         this.user_name = username;
-        this.textResponse = textResponse;
 
         try {
             this.UDPsocket = new DatagramSocket(dstPort);
@@ -49,24 +37,32 @@ public class Client extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void sendOverUDP (DataMessage message)
-    {
-        try {
-            InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
-            byte[] send_data = new byte[256];
-            send_data = message.asAString().getBytes();
-            DatagramPacket send_packet = new DatagramPacket(send_data, message.asAString().length(), IPAddress, this.dstPort);
-            this.UDPsocket.send(send_packet);
-        } catch (UnknownHostException e) {
-        e.printStackTrace();
-        response = "UnknownHostException: " + e.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            response = "IOException: " + e.toString();
-        }
+    public void sendMessage(DataMessage message) {
+        this.messageToSend = message;
     }
 
-    private void receiveOverUDP ()
+    private void sendOverUDP ()
+    {
+        if(this.messageToSend != null) {
+            try {
+                InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
+                byte[] send_data = new byte[256];
+                send_data = this.messageToSend.asAString().getBytes();
+                DatagramPacket send_packet = new DatagramPacket(send_data, this.messageToSend.asAString().length(), IPAddress, this.dstPort);
+                this.UDPsocket.send(send_packet);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                response = "UnknownHostException: " + e.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                response = "IOException: " + e.toString();
+            }
+            this.messageToSend = null;
+        }
+
+    }
+
+    public String receiveOverUDP ()
     {
         try {
             byte[] receiveData = new byte[256];
@@ -79,7 +75,6 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
             if (receivedMessage.length() > 0) {
                 int messageType  = message.viewMessageType();
-                Log.i("messageType", String.valueOf(message.viewMessageType()));
 
                 switch (messageType)
                 {
@@ -125,6 +120,11 @@ public class Client extends AsyncTask<Void, Void, Void> {
             response = "IOException: " + e.toString();
         }
 
+        return response;
+    }
+
+    public void disconnect() {
+        m_terminate = true;
     }
 
     @Override
@@ -133,19 +133,36 @@ public class Client extends AsyncTask<Void, Void, Void> {
         String destination = "broadcast";
 
         DataMessage connectionMessage = new DataMessage(initiateMessage, this.user_name, destination, Constants.mt_CLIENT_CONNECT);
-        this.sendOverUDP(connectionMessage);
+        this.messageToSend = connectionMessage;
+        this.sendOverUDP();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!m_terminate) {
-//                    Thread.sleep(50);
-                    receiveOverUDP();
+                    try {
+                        Thread.sleep(50);
+                        receiveOverUDP();
+                    } catch (InterruptedException e) {
+
+                    }
                 }
             }
         }).start();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!m_terminate) {
+                    try {
+                        Thread.sleep(50);
+                        sendOverUDP();
+                    } catch (InterruptedException e) {
 
+                    }
+                }
+            }
+        }).start();
         return null;
     }
 

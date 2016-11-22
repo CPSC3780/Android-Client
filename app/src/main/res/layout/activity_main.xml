@@ -12,40 +12,79 @@
         android:layout_marginBottom="20dp"
         android:text="Welcome to CPSC3780 Chat"
         android:textStyle="bold" />
-    <EditText
-        android:id="@+id/usernameEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter username:" />
 
-    <EditText
-        android:id="@+id/addressEditText"
+    <LinearLayout
+        android:id="@+id/loginUI"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Server ip address" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+        <EditText
+            android:id="@+id/usernameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter username:" />
 
-    <EditText
-        android:id="@+id/portEditText"
+        <EditText
+            android:id="@+id/addressEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Server ip address" />
+
+        <EditText
+            android:id="@+id/portEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Server port number" />
+
+        <Button
+            android:id="@+id/connectButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Connect..." />
+
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Clear" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/chatUI"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Server port number" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-    <Button
-        android:id="@+id/connectButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Connect..." />
+        <EditText
+            android:id="@+id/say"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter a message..." />
 
-    <Button
-        android:id="@+id/clearButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Clear" />
+        <Button
+            android:id="@+id/send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send" />
 
-    <TextView
-        android:id="@+id/responseTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/disconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Disconnect" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/chatmsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </ScrollView>
+    </LinearLayout>
 
 </LinearLayout>
