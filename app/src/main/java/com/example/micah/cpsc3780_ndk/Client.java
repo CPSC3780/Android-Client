@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.UnknownHostException;
+
+import android.app.Activity;
 import android.os.AsyncTask;
-import android.util.Log;
 import java.net.InetAddress;
+import android.widget.Toast;
+import android.os.Handler;
+import android.widget.TextView;
 
 public class Client extends AsyncTask<Void, Void, Void> {
     /**
@@ -23,11 +27,18 @@ public class Client extends AsyncTask<Void, Void, Void> {
     DatagramSocket UDPsocket = null;
 
     DataMessage messageToSend = null;
+    Handler handler = null;
+    Activity context;
+    TextView chatmsg;
 
-    Client(String addr, int port, String username) {
+    String r_messages = "";
+
+    Client(Activity context, String addr, int port, String username) {
         this.dstAddress = addr;
         this.dstPort = port;
         this.user_name = username;
+        this.context = context;
+        chatmsg = (TextView) this.context.findViewById(R.id.chatmsg);
 
         try {
             this.UDPsocket = new DatagramSocket(dstPort);
@@ -81,6 +92,13 @@ public class Client extends AsyncTask<Void, Void, Void> {
                     case Constants.mt_CLIENT_CONNECT:
                     {
                         response = message.viewPayload();
+                        this.context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                r_messages = r_messages + response + "\n";
+                                chatmsg.setText(r_messages);
+                            }
+                        });
                         break;
                     }
                     case Constants.mt_CLIENT_DISCONNECT:
@@ -91,16 +109,39 @@ public class Client extends AsyncTask<Void, Void, Void> {
                     case Constants.mt_CLIENT_PRIVATE_CHAT:
                     {
                         response = message.viewSourceIdentifier() + " whispers: " + message.viewPayload();
+                        response = message.viewPayload();
+                        this.context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                r_messages = r_messages + response + "\n";
+                                chatmsg.setText(r_messages);
+                            }
+                        });
                         break;
                     }
                     case Constants.mt_CLIENT_TARGET_NOT_FOUND:
                     {
                         response = "Server: Could not deliver message \"" + message.viewDestinationIdentifier() + "\"" + "\n";
+                        response = message.viewPayload();
+                        this.context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                r_messages = r_messages + response + "\n";
+                                chatmsg.setText(r_messages);
+                            }
+                        });
                         break;
                     }
                     case Constants.mt_RELAY_CHAT:
                     {
                         response = message.viewSourceIdentifier() + " says: " + message.viewPayload() + "\n";
+                        this.context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                r_messages = r_messages + response + "\n";
+                                chatmsg.setText(r_messages);
+                            }
+                        });
                         break;
                     }
                     default:

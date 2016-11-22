@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    TextView response, chatmsg;
+    TextView chatmsg;
     LinearLayout loginUI, chatUI;
     EditText editTextAddress, editTextPort, editTextUsername, editTextToSend;
     Button buttonConnect, buttonClear, buttonSend, buttonDisconnect;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 chatUI.setVisibility(View.VISIBLE);
 
                 myClient = new Client(
-                        textAddress, Integer.parseInt(portText), textUsername);
+                        MainActivity.this, textAddress, Integer.parseInt(portText), textUsername);
                 myClient.execute();
             }
         });
@@ -95,12 +95,16 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                // TODO: implement PRIVATE chat message types
+
                 String messageRelay = editTextToSend.getText().toString();
                 String textUsername = editTextUsername.getText().toString();
                 String destination = "broadcast";
 
+                r_messages = r_messages + "You say: " + messageRelay + "\n";
+
                 DataMessage message = new DataMessage(messageRelay, textUsername, destination, Constants.mt_RELAY_CHAT);
-                chatmsg.setText(messageRelay);
+                chatmsg.setText(r_messages);
                 myClient.sendMessage(message);
             }
         });
