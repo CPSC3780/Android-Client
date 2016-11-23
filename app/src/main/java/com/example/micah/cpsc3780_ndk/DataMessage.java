@@ -55,7 +55,6 @@ public class DataMessage {
      * PUBLIC METHODS
      */
     public int stringToMessageType (String inMessageTypeAsString) {
-        Log.i("messagetype", inMessageTypeAsString);
 
         if(inMessageTypeAsString.equals("client connect"))
         {
