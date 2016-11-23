@@ -10,8 +10,6 @@ import java.net.UnknownHostException;
 import android.app.Activity;
 import android.os.AsyncTask;
 import java.net.InetAddress;
-import android.widget.Toast;
-import android.os.Handler;
 import android.widget.TextView;
 
 public class Client extends AsyncTask<Void, Void, Void> {
@@ -27,11 +25,10 @@ public class Client extends AsyncTask<Void, Void, Void> {
     DatagramSocket UDPsocket = null;
 
     DataMessage messageToSend = null;
-    Handler handler = null;
     Activity context;
     TextView chatmsg;
 
-    String r_messages = "";
+    public static String r_messages = "";
 
     Client(Activity context, String addr, int port, String username) {
         this.dstAddress = addr;
@@ -73,7 +70,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     }
 
-    public String receiveOverUDP ()
+    public void receiveOverUDP ()
     {
         try {
             byte[] receiveData = new byte[256];
@@ -95,7 +92,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                r_messages = r_messages + response + "\n";
+                                r_messages = MainActivity.addMessageLog(response + "\n");
                                 chatmsg.setText(r_messages);
                             }
                         });
@@ -109,11 +106,10 @@ public class Client extends AsyncTask<Void, Void, Void> {
                     case Constants.mt_CLIENT_PRIVATE_CHAT:
                     {
                         response = message.viewSourceIdentifier() + " whispers: " + message.viewPayload();
-                        response = message.viewPayload();
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                r_messages = r_messages + response + "\n";
+                                r_messages = MainActivity.addMessageLog(response + "\n");
                                 chatmsg.setText(r_messages);
                             }
                         });
@@ -126,7 +122,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                r_messages = r_messages + response + "\n";
+                                r_messages = MainActivity.addMessageLog(response + "\n");
                                 chatmsg.setText(r_messages);
                             }
                         });
@@ -138,7 +134,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                r_messages = r_messages + response + "\n";
+                                r_messages = MainActivity.addMessageLog(response + "\n");
                                 chatmsg.setText(r_messages);
                             }
                         });
@@ -160,8 +156,6 @@ public class Client extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
             response = "IOException: " + e.toString();
         }
-
-        return response;
     }
 
     public void disconnect() {

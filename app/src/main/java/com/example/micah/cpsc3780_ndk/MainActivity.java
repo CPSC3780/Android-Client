@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
     TextView chatmsg;
@@ -16,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     EditText editTextAddress, editTextPort, editTextUsername, editTextToSend;
     Button buttonConnect, buttonClear, buttonSend, buttonDisconnect;
 
-    String r_messages = "";
+    public static String r_messages = "";
 
     Client myClient = null;
 
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     /**
      * App entry point, here we are instantiating UI elements
      * and setting event handlers accordingly
@@ -129,6 +131,12 @@ public class MainActivity extends AppCompatActivity {
                 chatUI.setVisibility(View.GONE);
             }
         });
+
+    }
+
+    static public String addMessageLog (String msg) {
+        r_messages = r_messages + msg;
+        return r_messages;
     }
     // Used to load the 'native-lib' library on application startup.
     static {
