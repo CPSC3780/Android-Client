@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import android.app.Activity;
 import android.os.AsyncTask;
 import java.net.InetAddress;
-import android.widget.Toast;
 import android.os.Handler;
 import android.widget.TextView;
 
@@ -21,6 +20,8 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     String dstAddress;
     int dstPort;
+    int m_sequenceNumber;
+    int m_serverIndex;
     String user_name;
     String response = "";
     Boolean m_terminate = false;
@@ -33,11 +34,17 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     String r_messages = "";
 
-    Client(Activity context, String addr, int port, String username) {
-        this.dstAddress = addr;
+    Client(
+            Activity context,
+            int serverIndex,
+            int port,
+            String username) {
+        this.m_serverIndex = serverIndex;
         this.dstPort = port;
         this.user_name = username;
         this.context = context;
+        this.m_sequenceNumber = 0;
+
         chatmsg = (TextView) this.context.findViewById(R.id.chatmsg);
 
         try {
@@ -168,12 +175,21 @@ public class Client extends AsyncTask<Void, Void, Void> {
         m_terminate = true;
     }
 
+    private int sequenceNumber () { return ++this.m_sequenceNumber; }
+
     @Override
     protected Void doInBackground(Void... arg0) {
         String initiateMessage = this.user_name + " has connected.";
-        String destination = "broadcast";
+        String destination = Constants.serverIndexToServerName(this.m)
 
-        DataMessage connectionMessage = new DataMessage(initiateMessage, this.user_name, destination, Constants.mt_CLIENT_CONNECT);
+        DataMessage connectionMessage =
+                new DataMessage(
+                        this.sequenceNumber(),
+                        Constants.mt_CLIENT_CONNECT,
+                        this.user_name,
+                        destination,
+                        initiateMessage);
+
         this.messageToSend = connectionMessage;
         this.sendOverUDP();
 

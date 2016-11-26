@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
@@ -15,8 +16,11 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout loginUI, chatUI;
     EditText editTextAddress, editTextPort, editTextUsername, editTextToSend;
     Button buttonConnect, buttonClear, buttonSend, buttonDisconnect;
-
+    RadioGroup radioGroup;
     String r_messages = "";
+
+    int serverPort;
+    int serverIndex;
 
     Client myClient = null;
 
@@ -34,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Login Panel
         editTextAddress = (EditText) findViewById(R.id.addressEditText);
-        editTextPort = (EditText) findViewById(R.id.portEditText);
         editTextUsername = (EditText) findViewById(R.id.usernameEditText);
         buttonConnect = (Button) findViewById(R.id.connectButton);
         buttonClear = (Button) findViewById(R.id.clearButton);
+        radioGroup = (RadioGroup) findViewById(R.id.server_radioGroup);
 
         // Chat Panel
 
@@ -45,6 +49,38 @@ public class MainActivity extends AppCompatActivity {
         buttonSend = (Button) findViewById(R.id.send);
         editTextToSend= (EditText) findViewById(R.id.say);
         buttonDisconnect = (Button) findViewById(R.id.disconnect);
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radio_alpha:
+                        serverIndex = Constants.charToServerIndex('A');
+                        serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        break;
+                    case R.id.radio_bravo:
+                        serverIndex = Constants.charToServerIndex('B');
+                        serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        break;
+                    case R.id.radio_charlie:
+                        serverIndex = Constants.charToServerIndex('C');
+                        serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        break;
+                    case R.id.radio_delta:
+                        serverIndex = Constants.charToServerIndex('D');
+                        serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        break;
+                    case R.id.radio_echo:
+                        serverIndex = Constants.charToServerIndex('E');
+                        serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        break;
+                    default:
+                        serverIndex = -1;
+                        serverPort = -1;
+                        break;
+                }
+            }
+        });
 
         buttonConnect.setOnClickListener(new OnClickListener() {
 
@@ -57,21 +93,6 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-
-                String textAddress = editTextAddress.getText().toString();
-                if (textAddress.equals("")) {
-                    Toast.makeText(MainActivity.this, "Please enter an address to connect to",
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                String portText = editTextPort.getText().toString();
-                if (portText.equals("")) {
-                    Toast.makeText(MainActivity.this, "Please enter the port",
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-
                 r_messages = "";
 
                 chatmsg.setText(r_messages);
@@ -79,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 chatUI.setVisibility(View.VISIBLE);
 
                 myClient = new Client(
-                        MainActivity.this, textAddress, Integer.parseInt(portText), textUsername);
+                        MainActivity.this, serverIndex, serverPort, textUsername);
                 myClient.execute();
             }
         });
@@ -94,9 +115,6 @@ public class MainActivity extends AppCompatActivity {
                 if (myClient == null) {
                     return;
                 }
-
-                // TODO: implement PRIVATE chat message types
-
                 String messageRelay = editTextToSend.getText().toString();
                 String textUsername = editTextUsername.getText().toString();
                 String destination = "broadcast";
