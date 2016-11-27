@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     String r_messages = "";
 
-    int serverPort;
-    int serverIndex;
+    int serverPort = -1;
+    int serverIndex = -1;
 
     Client myClient = null;
 
@@ -56,22 +56,37 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.radio_alpha:
                         serverIndex = Constants.charToServerIndex('A');
                         serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        Toast.makeText(MainActivity.this,
+                                "Alpha Server Selected",
+                                Toast.LENGTH_LONG).show();
                         break;
                     case R.id.radio_bravo:
                         serverIndex = Constants.charToServerIndex('B');
                         serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        Toast.makeText(MainActivity.this,
+                                "Bravo Server Selected",
+                                Toast.LENGTH_LONG).show();
                         break;
                     case R.id.radio_charlie:
                         serverIndex = Constants.charToServerIndex('C');
                         serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        Toast.makeText(MainActivity.this,
+                                "Charlie Server Selected",
+                                Toast.LENGTH_LONG).show();
                         break;
                     case R.id.radio_delta:
                         serverIndex = Constants.charToServerIndex('D');
                         serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        Toast.makeText(MainActivity.this,
+                                "Delta Server Selected",
+                                Toast.LENGTH_LONG).show();
                         break;
                     case R.id.radio_echo:
                         serverIndex = Constants.charToServerIndex('E');
                         serverPort = Constants.serverIndexToListeningPort(serverIndex);
+                        Toast.makeText(MainActivity.this,
+                                "Charlie Server Selected",
+                                Toast.LENGTH_LONG).show();
                         break;
                     default:
                         serverIndex = -1;
@@ -89,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (textUsername.equals("")) {
                     Toast.makeText(MainActivity.this, "Please enter a username",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if ((serverIndex == -1) || (serverPort == -1)) {
+                    Toast.makeText(MainActivity.this, "Please select a server to connect to",
                             Toast.LENGTH_LONG).show();
                     return;
                 }

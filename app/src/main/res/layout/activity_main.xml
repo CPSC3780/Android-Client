@@ -37,28 +37,23 @@
             <RadioButton android:id="@+id/radio_alpha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Alpha"
-                android:onClick="onRadioButtonClicked"/>
+                android:text="Alpha" />
             <RadioButton android:id="@+id/radio_bravo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bravo"
-                android:onClick="onRadioButtonClicked"/>
+                android:text="Bravo" />
             <RadioButton android:id="@+id/radio_charlie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Charlie"
-                android:onClick="onRadioButtonClicked"/>
+                android:text="Charlie" />
             <RadioButton android:id="@+id/radio_delta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delta"
-                android:onClick="onRadioButtonClicked"/>
+                android:text="Delta" />
             <RadioButton android:id="@+id/radio_echo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Echo"
-                android:onClick="onRadioButtonClicked"/>
+                android:text="Echo" />
         </RadioGroup>
 
         <Button
