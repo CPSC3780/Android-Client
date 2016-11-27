@@ -46,4 +46,9 @@ public class Constants {
 
         return inCharAsLower - 'a';
     }
+
+    public static String serverHostName (int inServerIndex)
+    {
+        return serverNames.get(inServerIndex) + "ServerCPSC3780";
+    }
 }

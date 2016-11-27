@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import java.net.InetAddress;
 import android.widget.TextView;
+import android.util.Log;
 
 public class Client extends AsyncTask<Void, Void, Void> {
     /**
@@ -42,6 +43,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
         this.dstPort = port;
         this.user_name = username;
         this.context = context;
+        this.dstAddress = Constants.serverHostName(this.m_serverIndex);
         this.m_sequenceNumber = 0;
 
         chatmsg = (TextView) this.context.findViewById(R.id.chatmsg);
@@ -62,6 +64,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
     {
         if(this.messageToSend != null || this.getRequestMessage != null) {
             try {
+                Log.i("Server address", this.dstAddress);
                 InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
                 byte[] send_data = new byte[256];
                 send_data = this.messageToSend.asAString().getBytes();
