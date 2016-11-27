@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import android.app.Activity;
 import android.os.AsyncTask;
 import java.net.InetAddress;
-import android.os.Handler;
 import android.widget.TextView;
 
 public class Client extends AsyncTask<Void, Void, Void> {
@@ -28,7 +27,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
     DatagramSocket UDPsocket = null;
 
     DataMessage messageToSend = null;
-    Handler handler = null;
+    DataMessage getRequestMessage = null;
     Activity context;
     TextView chatmsg;
 
@@ -61,7 +60,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     private void sendOverUDP ()
     {
-        if(this.messageToSend != null) {
+        if(this.messageToSend != null || this.getRequestMessage != null) {
             try {
                 InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
                 byte[] send_data = new byte[256];
@@ -76,10 +75,10 @@ public class Client extends AsyncTask<Void, Void, Void> {
                 response = "IOException: " + e.toString();
             }
             this.messageToSend = null;
+            this.getRequestMessage = null;
         }
 
     }
-
     public String receiveOverUDP ()
     {
         try {
@@ -180,7 +179,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... arg0) {
         String initiateMessage = this.user_name + " has connected.";
-        String destination = Constants.serverIndexToServerName(this.m)
+        String destination = Constants.serverIndexToServerName(this.m_serverIndex);
 
         DataMessage connectionMessage =
                 new DataMessage(
@@ -213,6 +212,28 @@ public class Client extends AsyncTask<Void, Void, Void> {
                 while (!m_terminate) {
                     try {
                         Thread.sleep(50);
+                        sendOverUDP();
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (!m_terminate) {
+                    try {
+                        DataMessage getRequest =
+                            new DataMessage(
+                                sequenceNumber(),
+                                Constants.mt_CLIENT_GET,
+                                user_name,
+                                Constants.serverIndexToServerName(m_serverIndex),
+                                "blank");
+                        getRequestMessage = getRequest;
+                        Thread.sleep(1000);
                         sendOverUDP();
                     } catch (InterruptedException e) {
 
