@@ -16,6 +16,8 @@ public class Constants {
     public static final int mt_CLIENT_GET = 4;
     public static final int mt_CLIENT_ACK = 5;
 
+    public static final int mt_SERVER_SEND = 6;
+
     private static List<Integer> serverListeningPorts = Arrays.asList(
             8080, 8081, 8082, 8083, 8084);
 

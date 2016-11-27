@@ -14,7 +14,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     TextView chatmsg;
     LinearLayout loginUI, chatUI;
-    EditText editTextAddress, editTextPort, editTextUsername, editTextToSend;
+    EditText editTextUsername, editTextToSend;
     Button buttonConnect, buttonClear, buttonSend, buttonDisconnect;
     RadioGroup radioGroup;
     String r_messages = "";
@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         chatUI = (LinearLayout) findViewById(R.id.chatUI);
 
         // Login Panel
-        editTextAddress = (EditText) findViewById(R.id.addressEditText);
         editTextUsername = (EditText) findViewById(R.id.usernameEditText);
         buttonConnect = (Button) findViewById(R.id.connectButton);
         buttonClear = (Button) findViewById(R.id.clearButton);
@@ -116,12 +115,32 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 String messageRelay = editTextToSend.getText().toString();
-                String textUsername = editTextUsername.getText().toString();
                 String destination = "broadcast";
 
                 r_messages = r_messages + "You say: " + messageRelay + "\n";
 
-                DataMessage message = new DataMessage(messageRelay, textUsername, destination, Constants.mt_RELAY_CHAT);
+                String [] parts = messageRelay.split(" ", 3);
+                String temp = parts[0];
+
+                if ((temp == "/message") || (temp == "/m"))
+                {
+                    destination = parts[1];
+
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this,
+                            "Invalid command. (Use '/m' || '/message' <target> <message>)",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                DataMessage message = new DataMessage(
+                        myClient.sequenceNumber(),
+                        Constants.mt_CLIENT_SEND,
+                        myClient.user_name,
+                        destination,
+                        parts[2]);
                 chatmsg.setText(r_messages);
                 myClient.sendMessage(message);
             }
@@ -132,8 +151,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 editTextUsername.setText("");
-                editTextAddress.setText("");
-                editTextPort.setText("");
             }
         });
 

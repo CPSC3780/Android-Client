@@ -112,35 +112,10 @@ public class Client extends AsyncTask<Void, Void, Void> {
                         // Do nothing
                         break;
                     }
-                    case Constants.mt_CLIENT_PRIVATE_CHAT:
+                    case Constants.mt_CLIENT_SEND:
                     {
-                        response = message.viewSourceIdentifier() + " whispers: " + message.viewPayload();
+                        response = message.viewSourceIdentifier() + " says: " + message.viewPayload();
                         response = message.viewPayload();
-                        this.context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                r_messages = r_messages + response + "\n";
-                                chatmsg.setText(r_messages);
-                            }
-                        });
-                        break;
-                    }
-                    case Constants.mt_CLIENT_TARGET_NOT_FOUND:
-                    {
-                        response = "Server: Could not deliver message \"" + message.viewDestinationIdentifier() + "\"" + "\n";
-                        response = message.viewPayload();
-                        this.context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                r_messages = r_messages + response + "\n";
-                                chatmsg.setText(r_messages);
-                            }
-                        });
-                        break;
-                    }
-                    case Constants.mt_RELAY_CHAT:
-                    {
-                        response = message.viewSourceIdentifier() + " says: " + message.viewPayload() + "\n";
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -174,7 +149,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
         m_terminate = true;
     }
 
-    private int sequenceNumber () { return ++this.m_sequenceNumber; }
+    public int sequenceNumber () { return ++this.m_sequenceNumber; }
 
     @Override
     protected Void doInBackground(Void... arg0) {
@@ -197,7 +172,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
             public void run() {
                 while (!m_terminate) {
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(1000);
                         receiveOverUDP();
                     } catch (InterruptedException e) {
 
