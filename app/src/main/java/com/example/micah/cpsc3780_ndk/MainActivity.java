@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
     TextView chatmsg;
@@ -137,12 +138,12 @@ public class MainActivity extends AppCompatActivity {
                 String messageRelay = editTextToSend.getText().toString();
                 String destination = "broadcast";
 
-                r_messages = r_messages + "You say: " + messageRelay + "\n";
-
                 String [] parts = messageRelay.split(" ", 3);
                 String temp = parts[0];
 
-                if ((temp == "/message") || (temp == "/m"))
+                Log.i("Command",temp);
+
+                if ((temp.equals("/message")) || (temp.equals("/m")))
                 {
                     destination = parts[1];
 
@@ -161,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                         myClient.user_name,
                         destination,
                         parts[2]);
+                r_messages = r_messages + "You say: " + parts[2] + "\n";
                 chatmsg.setText(r_messages);
                 myClient.sendMessage(message);
             }

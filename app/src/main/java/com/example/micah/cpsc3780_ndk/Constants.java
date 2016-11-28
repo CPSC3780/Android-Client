@@ -15,7 +15,6 @@ public class Constants {
     public static final int mt_CLIENT_SEND = 3;
     public static final int mt_CLIENT_GET = 4;
     public static final int mt_CLIENT_ACK = 5;
-
     public static final int mt_SERVER_SEND = 6;
 
     private static List<Integer> serverListeningPorts = Arrays.asList(
@@ -24,6 +23,8 @@ public class Constants {
     private static List <String> serverNames = Arrays.asList(
             "Alpha", "Bravo", "Charlie", "Delta", "Echo");
 
+    // Android emulator will not resolve /etc/hosts file
+    public static String serverIP = "192.168.0.14";
     public static String serverIndexToServerName(int inServerIndex)
     {
         return serverNames.get(inServerIndex);

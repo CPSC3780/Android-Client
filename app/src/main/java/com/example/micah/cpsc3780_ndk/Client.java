@@ -29,6 +29,8 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     DataMessage messageToSend = null;
     DataMessage getRequestMessage = null;
+    DataMessage ackMessage = null;
+
     Activity context;
     TextView chatmsg;
 
@@ -43,7 +45,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
         this.dstPort = port;
         this.user_name = username;
         this.context = context;
-        this.dstAddress = Constants.serverHostName(this.m_serverIndex);
+        this.dstAddress = Constants.serverIP;
         this.m_sequenceNumber = 0;
 
         chatmsg = (TextView) this.context.findViewById(R.id.chatmsg);
@@ -62,7 +64,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     private void sendOverUDP ()
     {
-        if(this.messageToSend != null || this.getRequestMessage != null) {
+        if(this.messageToSend != null) {
             try {
                 Log.i("Server address", this.dstAddress);
                 InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
@@ -78,10 +80,53 @@ public class Client extends AsyncTask<Void, Void, Void> {
                 response = "IOException: " + e.toString();
             }
             this.messageToSend = null;
+        }
+
+    }
+
+    private void sendGetRequestsOverUDP ()
+    {
+        if(this.getRequestMessage != null) {
+            try {
+                Log.i("Server address", this.dstAddress);
+                InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
+                byte[] send_data = new byte[256];
+                send_data = this.getRequestMessage.asAString().getBytes();
+                DatagramPacket send_packet = new DatagramPacket(send_data, this.getRequestMessage.asAString().length(), IPAddress, this.dstPort);
+                this.UDPsocket.send(send_packet);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                response = "UnknownHostException: " + e.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                response = "IOException: " + e.toString();
+            }
             this.getRequestMessage = null;
         }
 
     }
+
+    private void sendAckMessagesOverUDP ()
+    {
+        if(this.ackMessage != null) {
+            try {
+                InetAddress IPAddress =  InetAddress.getByName(this.dstAddress);
+                byte[] send_data = new byte[256];
+                send_data = this.ackMessage.asAString().getBytes();
+                DatagramPacket send_packet = new DatagramPacket(send_data, this.ackMessage.asAString().length(), IPAddress, this.dstPort);
+                this.UDPsocket.send(send_packet);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                response = "UnknownHostException: " + e.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+                response = "IOException: " + e.toString();
+            }
+            this.ackMessage = null;
+        }
+
+    }
+
     public String receiveOverUDP ()
     {
         try {
@@ -119,6 +164,18 @@ public class Client extends AsyncTask<Void, Void, Void> {
                     {
                         response = message.viewSourceIdentifier() + " says: " + message.viewPayload();
                         response = message.viewPayload();
+                        Log.i("CLIENT SEND", response);
+
+                        DataMessage sendAckMessage = new DataMessage(
+                                message.viewSequenceNumber(),
+                                Constants.mt_CLIENT_ACK,
+                                this.user_name,
+                                Constants.serverIndexToServerName(this.m_serverIndex),
+                                "blank"
+                        );
+
+                        this.ackMessage = sendAckMessage;
+                        this.sendAckMessagesOverUDP();
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -203,6 +260,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
             public void run() {
                 while (!m_terminate) {
                     try {
+                        Thread.sleep(1000);
                         DataMessage getRequest =
                             new DataMessage(
                                 sequenceNumber(),
@@ -211,14 +269,14 @@ public class Client extends AsyncTask<Void, Void, Void> {
                                 Constants.serverIndexToServerName(m_serverIndex),
                                 "blank");
                         getRequestMessage = getRequest;
-                        Thread.sleep(1000);
-                        sendOverUDP();
+                        sendGetRequestsOverUDP();
                     } catch (InterruptedException e) {
 
                     }
                 }
             }
         }).start();
+
         return null;
     }
 
