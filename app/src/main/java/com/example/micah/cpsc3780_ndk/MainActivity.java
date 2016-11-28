@@ -18,10 +18,10 @@ public class MainActivity extends AppCompatActivity {
     EditText editTextUsername, editTextToSend;
     Button buttonConnect, buttonClear, buttonSend, buttonDisconnect;
     RadioGroup radioGroup;
-    String r_messages = "";
     int serverPort = -1;
     int serverIndex = -1;
 
+    public static String r_messages = "";
     Client myClient = null;
 
 
@@ -186,6 +186,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+    static public String addMessageLog (String msg) {
+        r_messages = r_messages + msg;
+        return r_messages;
     }
     // Used to load the 'native-lib' library on application startup.
     static {

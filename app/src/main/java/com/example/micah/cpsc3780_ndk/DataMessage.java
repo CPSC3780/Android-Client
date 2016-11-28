@@ -1,6 +1,4 @@
 package com.example.micah.cpsc3780_ndk;
-
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import android.util.Log;
@@ -61,6 +59,7 @@ public class DataMessage {
      * PUBLIC METHODS
      */
     public int stringToMessageType (String inMessageTypeAsString) {
+        Log.i("Message as string", inMessageTypeAsString);
 
         if(inMessageTypeAsString.equals("client connect"))
         {
@@ -85,6 +84,11 @@ public class DataMessage {
         if(inMessageTypeAsString.equals("client ack"))
         {
             return Constants.mt_CLIENT_ACK;
+        }
+
+        if (inMessageTypeAsString.equals("server send"))
+        {
+            return Constants.mt_SERVER_SEND;
         }
 
         assert(false);

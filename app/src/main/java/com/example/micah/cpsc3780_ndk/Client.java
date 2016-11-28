@@ -138,6 +138,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
             if (receivedMessage.length() > 0) {
                 int messageType  = message.viewMessageType();
+                Log.i("Message type", String.valueOf(messageType));
 
                 switch (messageType)
                 {
@@ -147,7 +148,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                r_messages = r_messages + response + "\n";
+                                MainActivity.addMessageLog(response + "\n");
                                 chatmsg.setText(r_messages);
                             }
                         });
@@ -158,11 +159,9 @@ public class Client extends AsyncTask<Void, Void, Void> {
                         // Do nothing
                         break;
                     }
-                    case Constants.mt_CLIENT_SEND:
+                    case Constants.mt_SERVER_SEND:
                     {
                         response = message.viewSourceIdentifier() + " says: " + message.viewPayload();
-                        response = message.viewPayload();
-                        Log.i("CLIENT SEND", response);
 
                         DataMessage sendAckMessage = new DataMessage(
                                 message.viewSequenceNumber(),
@@ -177,7 +176,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
                         this.context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                r_messages = r_messages + response + "\n";
+                                r_messages = MainActivity.addMessageLog(response + "\n");
                                 chatmsg.setText(r_messages);
                             }
                         });
