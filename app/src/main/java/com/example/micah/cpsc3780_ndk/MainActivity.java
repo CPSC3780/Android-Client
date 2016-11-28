@@ -11,15 +11,14 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.Log;
-
 public class MainActivity extends AppCompatActivity {
+
     TextView chatmsg;
     LinearLayout loginUI, chatUI;
     EditText editTextUsername, editTextToSend;
     Button buttonConnect, buttonClear, buttonSend, buttonDisconnect;
     RadioGroup radioGroup;
     String r_messages = "";
-
     int serverPort = -1;
     int serverIndex = -1;
 
@@ -186,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 chatUI.setVisibility(View.GONE);
             }
         });
+
     }
     // Used to load the 'native-lib' library on application startup.
     static {

@@ -30,11 +30,10 @@ public class Client extends AsyncTask<Void, Void, Void> {
     DataMessage messageToSend = null;
     DataMessage getRequestMessage = null;
     DataMessage ackMessage = null;
-
     Activity context;
     TextView chatmsg;
 
-    String r_messages = "";
+    public static String r_messages = "";
 
     Client(
             Activity context,
@@ -83,7 +82,6 @@ public class Client extends AsyncTask<Void, Void, Void> {
         }
 
     }
-
     private void sendGetRequestsOverUDP ()
     {
         if(this.getRequestMessage != null) {
@@ -127,7 +125,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
     }
 
-    public String receiveOverUDP ()
+    public void receiveOverUDP ()
     {
         try {
             byte[] receiveData = new byte[256];
@@ -201,8 +199,6 @@ public class Client extends AsyncTask<Void, Void, Void> {
             e.printStackTrace();
             response = "IOException: " + e.toString();
         }
-
-        return response;
     }
 
     public void disconnect() {
