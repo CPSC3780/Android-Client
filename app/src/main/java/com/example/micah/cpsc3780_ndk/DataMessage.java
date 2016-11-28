@@ -1,6 +1,4 @@
 package com.example.micah.cpsc3780_ndk;
-
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import android.util.Log;
@@ -14,25 +12,27 @@ public class DataMessage {
      */
     String m_payload;
     int m_messageType;
+    int m_sequenceNumber;
     String m_sourceIdentifier;
     String m_destinationIdentifier;
-    boolean m_relayToAdjacentServers;
+    int  m_serverSyncPayloadOriginIndex;
 
     /**
      * CONSTRUCTORS
      */
     DataMessage(
-            String inPayload,
+            int sequenceNumber,
+            int messageType,
             String SourceID,
             String inDestination,
-            int messageType
-            )
+            String inPayload)
     {
         this.m_payload = inPayload;
+        this.m_sequenceNumber = sequenceNumber;
         this.m_sourceIdentifier = SourceID;
         this.m_destinationIdentifier = inDestination;
         this.m_messageType = messageType;
-        this.m_relayToAdjacentServers = true;
+        this.m_serverSyncPayloadOriginIndex = -1;
     }
 
     DataMessage(String receivedStringMessage)
@@ -40,21 +40,26 @@ public class DataMessage {
         String receivedString = receivedStringMessage;
 
         String[] partsOfMessage = receivedString.split(Pattern.quote("/?"));
-        this.m_payload = partsOfMessage[0];
-        this.m_sourceIdentifier = partsOfMessage[1];
-        this.m_destinationIdentifier = partsOfMessage[2];
 
-        String typePart = partsOfMessage[3];
+        this.m_sequenceNumber = Integer.parseInt(partsOfMessage[0]);
+
+        String typePart = partsOfMessage[1];
         this.m_messageType = this.stringToMessageType(typePart);
 
-        String relayStatus = partsOfMessage[4];
-        this.m_relayToAdjacentServers = Boolean.valueOf(relayStatus);
+        this.m_sourceIdentifier = partsOfMessage[2];
+        this.m_destinationIdentifier = partsOfMessage[3];
+
+        this.m_payload = partsOfMessage[4];
+
+        String serverSyncPayloadOriginIndexString = partsOfMessage[5];
+        this.m_serverSyncPayloadOriginIndex = Integer.parseInt(serverSyncPayloadOriginIndexString);
     }
 
     /**
      * PUBLIC METHODS
      */
     public int stringToMessageType (String inMessageTypeAsString) {
+        Log.i("Message as string", inMessageTypeAsString);
 
         if(inMessageTypeAsString.equals("client connect"))
         {
@@ -66,19 +71,24 @@ public class DataMessage {
             return Constants.mt_CLIENT_DISCONNECT;
         }
 
-        if(inMessageTypeAsString.equals("private chat"))
+        if(inMessageTypeAsString.equals("client send"))
         {
-            return Constants.mt_CLIENT_PRIVATE_CHAT;
+            return Constants.mt_CLIENT_SEND;
         }
 
-        if (inMessageTypeAsString.equals("relay chat"))
+        if (inMessageTypeAsString.equals("client get"))
         {
-            return Constants.mt_RELAY_CHAT;
+            return Constants.mt_CLIENT_GET;
         }
 
-        if(inMessageTypeAsString.equals("target not found"))
+        if(inMessageTypeAsString.equals("client ack"))
         {
-            return Constants.mt_CLIENT_TARGET_NOT_FOUND;
+            return Constants.mt_CLIENT_ACK;
+        }
+
+        if (inMessageTypeAsString.equals("server send"))
+        {
+            return Constants.mt_SERVER_SEND;
         }
 
         assert(false);
@@ -102,19 +112,19 @@ public class DataMessage {
                 messageTypeAsString = "client disconnect";
                 break;
             }
-            case Constants.mt_CLIENT_PRIVATE_CHAT:
+            case Constants.mt_CLIENT_SEND:
             {
-                messageTypeAsString = "private chat";
+                messageTypeAsString = "client send";
                 break;
             }
-            case Constants.mt_CLIENT_TARGET_NOT_FOUND:
+            case Constants.mt_CLIENT_GET:
             {
-                messageTypeAsString = "target not found";
+                messageTypeAsString = "client get";
                 break;
             }
-            case Constants.mt_RELAY_CHAT:
+            case Constants.mt_CLIENT_ACK:
             {
-                messageTypeAsString = "relay chat";
+                messageTypeAsString = "client ack";
                 break;
             }
             default:
@@ -124,11 +134,6 @@ public class DataMessage {
 
         }
         return messageTypeAsString;
-    }
-
-    public String getRelayServerStatusAsIntString () {
-        // TODO: this is kind of dumb, need to do some more research on this
-        return this.m_relayToAdjacentServers ? "1" : "0";
     }
 
     public int viewMessageType() {
@@ -147,14 +152,17 @@ public class DataMessage {
         return this.m_destinationIdentifier;
     }
 
+    public int viewSequenceNumber () { return this.m_sequenceNumber; }
+
     public String asAString()
     {
         String messageAsString =
-                this.m_payload + Constants.messageDelimiter()
+                String.valueOf(this.m_sequenceNumber) + Constants.messageDelimiter()
+                 + this.viewMessageTypeAsString() + Constants.messageDelimiter()
                  + this.m_sourceIdentifier + Constants.messageDelimiter()
                  + this.m_destinationIdentifier + Constants.messageDelimiter()
-                 + this.viewMessageTypeAsString() + Constants.messageDelimiter()
-                 + this.getRelayServerStatusAsIntString() + Constants.messageDelimiter();
+                 + this.m_payload + Constants.messageDelimiter()
+                 + String.valueOf(this.m_serverSyncPayloadOriginIndex) + Constants.messageDelimiter();
 
         return messageAsString;
     }

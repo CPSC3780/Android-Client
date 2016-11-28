@@ -25,17 +25,36 @@
             android:layout_height="wrap_content"
             android:hint="Enter username:" />
 
-        <EditText
-            android:id="@+id/addressEditText"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Server ip address" />
+            android:text="Select a server to connect to:"/>
 
-        <EditText
-            android:id="@+id/portEditText"
-            android:layout_width="match_parent"
+        <RadioGroup android:id="@+id/server_radioGroup"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Server port number" />
+            android:orientation="vertical">
+            <RadioButton android:id="@+id/radio_alpha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alpha" />
+            <RadioButton android:id="@+id/radio_bravo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bravo" />
+            <RadioButton android:id="@+id/radio_charlie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Charlie" />
+            <RadioButton android:id="@+id/radio_delta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delta" />
+            <RadioButton android:id="@+id/radio_echo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Echo" />
+        </RadioGroup>
 
         <Button
             android:id="@+id/connectButton"
