@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.UnknownHostException;
-
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.app.Activity;
 import android.os.AsyncTask;
 import java.net.InetAddress;
@@ -25,6 +26,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
     String user_name;
     String response = "";
     Boolean m_terminate = false;
+    Boolean isBt_protocol = false;
     DatagramSocket UDPsocket = null;
 
     DataMessage messageToSend = null;
@@ -39,21 +41,36 @@ public class Client extends AsyncTask<Void, Void, Void> {
             Activity context,
             int serverIndex,
             int port,
-            String username) {
+            String username,
+            Boolean bt_protocol) {
         this.m_serverIndex = serverIndex;
         this.dstPort = port;
         this.user_name = username;
         this.context = context;
         this.dstAddress = Constants.serverIP;
         this.m_sequenceNumber = 0;
+        this.isBt_protocol = bt_protocol;
 
         chatmsg = (TextView) this.context.findViewById(R.id.chatmsg);
 
-        try {
-            this.UDPsocket = new DatagramSocket(dstPort);
-        } catch (IOException e) {
-            e.printStackTrace();
-            response = "IOException: " + e.toString();
+        if (this.isBt_protocol)
+        {
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if(bluetoothAdapter != null && bluetoothAdapter.isDiscovering()){
+                bluetoothAdapter.cancelDiscovery();
+            }
+            bluetoothAdapter.startDiscovery();
+
+
+        } else
+        {
+            try {
+                this.UDPsocket = new DatagramSocket(dstPort);
+            } catch (IOException e) {
+                e.printStackTrace();
+                response = "IOException: " + e.toString();
+            }
         }
     }
 

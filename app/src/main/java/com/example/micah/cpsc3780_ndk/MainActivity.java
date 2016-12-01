@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     TextView chatmsg;
     LinearLayout loginUI, chatUI;
     EditText editTextUsername, editTextToSend;
-    Button buttonConnect, buttonClear, buttonSend, buttonDisconnect;
+    Button buttonConnect, buttonClear, buttonSend, buttonDisconnect, buttonBluetooth;
     RadioGroup radioGroup;
     int serverPort = -1;
     int serverIndex = -1;
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         // Login Panel
         editTextUsername = (EditText) findViewById(R.id.usernameEditText);
         buttonConnect = (Button) findViewById(R.id.connectButton);
+        buttonBluetooth = (Button) findViewById(R.id.connectButton);
         buttonClear = (Button) findViewById(R.id.clearButton);
         radioGroup = (RadioGroup) findViewById(R.id.server_radioGroup);
 
@@ -119,7 +120,34 @@ public class MainActivity extends AppCompatActivity {
                 chatUI.setVisibility(View.VISIBLE);
 
                 myClient = new Client(
-                        MainActivity.this, serverIndex, serverPort, textUsername);
+                        MainActivity.this, serverIndex, serverPort, textUsername, false);
+                myClient.execute();
+            }
+        });
+        buttonBluetooth.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String textUsername = editTextUsername.getText().toString();
+
+                if (textUsername.equals("")) {
+                    Toast.makeText(MainActivity.this, "Please enter a username",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if ((serverIndex == -1) || (serverPort == -1)) {
+                    Toast.makeText(MainActivity.this, "Please select a server to connect to",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                r_messages = "";
+
+                chatmsg.setText(r_messages);
+                loginUI.setVisibility(View.GONE);
+                chatUI.setVisibility(View.VISIBLE);
+
+                myClient = new Client(
+                        MainActivity.this, serverIndex, serverPort, textUsername, true);
                 myClient.execute();
             }
         });

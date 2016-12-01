@@ -61,8 +61,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Connect..." />
-
+            android:text="Connect via UDP..." />
+        <Button
+            android:id="@+id/connectBluetooth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Connect via Bluetooth..." />
         <Button
             android:id="@+id/clearButton"
             android:layout_width="match_parent"
