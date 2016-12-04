@@ -24,7 +24,7 @@ public class Constants {
             "Alpha", "Bravo", "Charlie", "Delta", "Echo");
 
     // Android emulator will not resolve /etc/hosts file
-    public static String serverIP = "192.168.0.14";
+    public static String serverIP = "192.168.0.20";
     public static String serverIndexToServerName(int inServerIndex)
     {
         return serverNames.get(inServerIndex);

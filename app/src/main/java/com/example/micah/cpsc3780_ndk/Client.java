@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.UnknownHostException;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.app.Activity;
 import android.os.AsyncTask;
 import java.net.InetAddress;
@@ -43,6 +41,7 @@ public class Client extends AsyncTask<Void, Void, Void> {
             int port,
             String username,
             Boolean bt_protocol) {
+        Log.i("Client interface ", "initialized");
         this.m_serverIndex = serverIndex;
         this.dstPort = port;
         this.user_name = username;
@@ -55,16 +54,10 @@ public class Client extends AsyncTask<Void, Void, Void> {
 
         if (this.isBt_protocol)
         {
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if(bluetoothAdapter != null && bluetoothAdapter.isDiscovering()){
-                bluetoothAdapter.cancelDiscovery();
-            }
-            bluetoothAdapter.startDiscovery();
-
 
         } else
         {
+            Log.i("UDP protocol ", "initialized");
             try {
                 this.UDPsocket = new DatagramSocket(dstPort);
             } catch (IOException e) {
